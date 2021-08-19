@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Make my first interactive javascript for a series of web pages.">
+ <meta name="keywords" content="learn javascript, first javascript, interactive web pages" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title> start page - First Javascript Series</title>
+<!-- link rel="stylesheet" href="reset.css" -->
+<style>
+.divFormBlock { clear: both; background-color:FFFFFF; 
+    border-style:solid; border-width:1px;
+    width:400px; padding:5%;  margin-left: 5%;
+}
+      
+
+.btnGeneric { height: 35px; width: 80px;
+  background-color: lightgray;
+  border: none; border-radius: 12px;
+  color: white; font-size: 16px; font-weight: 900;
+  vertical-align: top;   
+  text-align: center; padding:0;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;   
+}
+</style>
+
+<script type="text/javascript" src=""></script>
+<script type="text/javascript">
+
+var gstrSavedData = "";
+
+//-----------------------------
+
+function fGetRandomNum()
+{
+    var strData = ""; 
+    var intX = Math.floor((Math.random() * 999) + 1);
+    if (intX > 999) { intX = (1000 - intX); }
+    if(intX < 100) { intX = intX +100; }
+    strData = intX.toString(); 
+    return strData;
+}
+
+
+function fGetCompressedDate()
+{
+    var dtNew = new Date();
+    var strDate = "";
+    var strTemp = "";
+    var arrTemp = null;
+    //
+    strTemp =  dtNew.getFullYear() +"-0";
+    arrTemp = strTemp.split('-'); //strange glitch where I cannot parse the year string directly
+    strDate = arrTemp[0].substr(2,2); 
+    strDate = strDate + (dtNew.getMonth() +1);
+    strDate = strDate +  dtNew.getDate();
+    strDate = strDate +"-"+  dtNew.getHours();
+    strDate = strDate +  dtNew.getMinutes();
+    return strDate;
+}
+
+
+function fGetFormatID()
+{
+    var strUniqueID = "";
+    var strNum ="";
+    //
+    strUniqueID = fGetCompressedDate() +"-"+ fGetRandomNum();
+    return strUniqueID;
+}
+
+
+function sButtonGenerate()
+{
+    var objText;
+    var strValue = "";
+    objText = document.getElementById('tUniqueID'); 
+    strValue = fGetFormatID();
+    objText.value = strValue; 
+    gstrSavedData = strValue; 
+    //
+    objText = document.getElementById('divTesting'); 
+    objText.innerHTML = "Generating ID ...";
+}
+
+
+function sButtonNext()
+{
+    window.location = "UserForm.htm?tUniqueID="+ gstrSavedData;
+}
+
+
+
+function sMain()
+{
+    var objText;
+    objText = document.getElementById('divTesting'); 
+    objText.innerHTML = "onLoad action of Body tag work! ...";
+}
+
+//-----------------------------
+
+function noenter() {
+  return !(window.event && window.event.keyCode == 13); } 
+</script>
+</head>
+
+<body onload="sMain();" >
+    <br><br>
+    
+<form id="frmMain" name="frmMain">
+<div id="divFormBlock" class="divFormBlock">
+    
+<div style="font-size:16px; font-family:Arial; color:green; font-weight:900; text-align:center;  ">First Ineractive Javascript Page</div> 
+<br><br><br>
+    
+    Generate UniqueID ( <a href="javascript:sButtonGenerate();">Generate ID</a> ): 
+    <br>
+    <input id="tUniqueID" sytle="font-size:16px;font-family:Arial; height=30px;" value="" onkeypress="return noenter();" />
+<br><br><br>
+
+    <button type="button" id="btnFormButton" name="btnFormButton"  class="btnGeneric" onclick="sButtonNext();">Next</button>
+    <div id="divSpacer" style="width:150px; text-align:right; display:inline-block;">  </div> 
+    
+    <br><br><br>
+<div id="divTesting" style="color:red;"> </div> 
+
+</div><!-- divFormBlock -->
+</form>
+
+<br><br>
+</body>
+</html>

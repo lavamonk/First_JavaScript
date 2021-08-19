@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="My second page for my first interactive javascript for a series of web pages.">
+ <meta name="keywords" content="learn javascript, first javascript, interactive web pages" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title> userform page - First Javascript Series</title>
+<!-- link rel="stylesheet" href="reset.css" -->
+<style>
+.divFormBlock { clear: both; background-color:FFFFFF; 
+    border-style:solid; border-width:1px;
+    width:400px; padding:5%;  margin-left: 5%;
+}
+      
+
+.btnGeneric { height: 35px; width: 80px;
+  background-color: lightgray;
+  border: none; border-radius: 12px;
+  color: white; font-size: 16px; font-weight: 900;
+  vertical-align: top;   
+  text-align: center; padding:0;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;   
+}
+</style>
+
+<script type="text/javascript" src=""></script>
+<script type="text/javascript">
+
+var gstrSavedData = "";
+
+//----------------------------
+
+function sGetFormValues()
+{
+    var strUniqueID = "";
+    var arrFormValues = null;
+    var strTemp = "tBox1,tBox2,tBox3";
+    //
+    arrFormValues = strTemp.split(',');
+    strUniqueID= gstrSavedData;
+    //
+    gstrSavedData = "tBox0:"+ strUniqueID;
+    gstrSavedData = gstrSavedData +"|"+ arrFormValues[0] +":"+ document.getElementById(arrFormValues[0]).value;
+    gstrSavedData = gstrSavedData +"|"+ arrFormValues[1] +":"+ document.getElementById(arrFormValues[1]).value;
+    gstrSavedData = gstrSavedData +"|"+ arrFormValues[2] +":"+ document.getElementById(arrFormValues[2]).value;
+}
+
+
+//-----------------------------
+
+function sButtonSubmit()
+{
+    //do something until you have a web service to submit to
+    var objText;
+    sGetFormValues();
+    objText = document.getElementById('divTesting'); 
+    objText.innerHTML = "Submit button press: "+ gstrSavedData;
+    //
+    window.location = "WebServer.htm?data="+ gstrSavedData; 
+}
+
+
+function sButtonCancel()
+{
+    window.location = "index.html";
+}
+
+
+//-----------------------------
+
+function fGetUrlQueryData()
+{
+    var arrInfo = null;
+    var arrDetails = null;
+    var strRecord ="";
+    var strSearch = "";
+    var strGetInfo = location.search;
+    arrInfo = strGetInfo.split("?");
+    strGetInfo = arrInfo[1]
+    arrInfo = null; 
+    //
+    arrInfo = strGetInfo.split("&");
+    //
+    arrDetails = arrInfo[0].split("=");
+    strRecord = arrDetails[1];
+    //alert("rec: "+ strRecord +" :org:"+ arrInfo[0]); //testing only
+    arrDetails = null;
+    return strRecord;
+}
+
+function sMain()
+{
+    var objText;
+    objText = document.getElementById('divTesting'); 
+    objText.innerHTML = "onLoad found URL data: "+ fGetUrlQueryData();
+    //
+    objText = document.getElementById('divUniqueID');
+    gstrSavedData = fGetUrlQueryData();
+    objText.innerHTML = gstrSavedData;
+}
+
+//-----------------------------
+
+function noenter() {
+  return !(window.event && window.event.keyCode == 13); } 
+</script>
+</head>
+
+<body onload="sMain();" >
+    <br><br>
+    
+<form id="frmMain" name="frmMain">
+<div id="divFormBlock" class="divFormBlock">
+
+
+<div style="font-size:16px; font-family:Arial; color:green; font-weight:900; text-align:center;  "> User Form page (2nd page) </div> 
+<br><br>
+
+Unique ID: <br>
+<div id="divUniqueID" style="color:blue; font-weight:900;"> </div> 
+<br><br>
+
+First Name: <br>
+<input id="tBox1" sytle="font-size:16px;font-family:Arial; height=30px;" value="" onkeypress="return noenter();" />
+<br><br>
+
+Last Name: <br>
+<input id="tBox2" sytle="font-size:16px;font-family:Arial; height=30px;" value="" onkeypress="return noenter();" />
+<br><br>
+
+Email: <br>
+<input id="tBox3" sytle="font-size:16px;font-family:Arial; height=30px;" value="" onkeypress="return noenter();" />
+<br><br>
+
+<br>
+<button type="button" id="btnFormButton" name="btnFormButton"  class="btnGeneric" onclick="sButtonSubmit();">Submit</button>
+    <div id="divSpacer" style="width:150px; text-align:right; display:inline-block;"> <button type="button" id="btnFormButton" name="btnFormButton"  class="btnGeneric" onclick="sButtonCancel();">Cancel</button> </div> 
+
+<br><br><br>
+<div id="divTesting" style="color:red;"> </div> 
+
+
+</div><!-- divFormBlock -->
+</form>
+
+<br><br>
+</body>
+</html>

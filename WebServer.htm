@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="My second page for my first interactive javascript for a series of web pages.">
+ <meta name="keywords" content="learn javascript, first javascript, interactive web pages" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title> userform page - First Javascript Series</title>
+<!-- link rel="stylesheet" href="reset.css" -->
+<style>
+.divFormBlock { clear: both; background-color:FFFFFF; 
+    border-style:solid; border-width:1px;
+    width:400px; padding:5%;  margin-left: 5%;
+}
+      
+
+.btnGeneric { height: 35px; width: 80px;
+  background-color: lightgray;
+  border: none; border-radius: 12px;
+  color: white; font-size: 16px; font-weight: 900;
+  vertical-align: top;   
+  text-align: center; padding:0;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;   
+}
+</style>
+
+<script type="text/javascript" src=""></script>
+<script type="text/javascript">
+var gstrSavedData = "";
+var garrSavedData = null;
+
+//------------------
+//https://www.tutorialspoint.com/html5/html5_indexeddb.htm
+
+//prefixes of implementation that we want to test
+         window.indexedDB = window.indexedDB || window.mozIndexedDB || 
+         window.webkitIndexedDB || window.msIndexedDB;
+         
+         //prefixes of window.IDB objects
+         window.IDBTransaction = window.IDBTransaction || 
+         window.webkitIDBTransaction || window.msIDBTransaction;
+         window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || 
+         window.msIDBKeyRange
+         
+         if (!window.indexedDB) {
+            window.alert("Your browser doesn't support a stable version of IndexedDB.")
+         }
+         
+         //please note that numbers do not need quotes when creating or reading records
+         const userData = [
+            { id: "00-01", firstname: "gopal", lastname: "moonster", email: "gopal@tutorialspoint.com" },
+            { id: "00-02", firstname: "prasad", lastname: "namer", email: "prasad@tutorialspoint.com" }
+         ];
+         var db;
+         var request = window.indexedDB.open("JSInteractiveDB", 1);
+         
+         request.onerror = function(event) {
+            console.log("error: ");
+         };
+         
+         request.onsuccess = function(event) {
+            db = request.result;
+            console.log("success: "+ db);
+         };
+         
+         request.onupgradeneeded = function(event) {
+            var db = event.target.result;
+            var objectStore = db.createObjectStore("user", {keyPath: "id"});
+            
+            for (var i in userData) {
+               objectStore.add(userData[i]);
+            }
+         }
+         
+         
+         //-timing issue with onLoad in the Body tag
+         //-also avoid adding any extra code in the database functions
+         //-keep it simple and only access global variables
+         function setUserDB() {
+            var request = db.transaction(["user"], "readwrite")
+            .objectStore("user")
+            .add({ id: garrSavedData[0], firstname: garrSavedData[1], lastname: garrSavedData[2], email: garrSavedData[3] });
+            
+            request.onsuccess = function(event) {
+               alert("Record has been added to your database.");
+            };
+            
+            request.onerror = function(event) {
+               alert("Unable to add data\r\n That aready exist in your database! ");
+            }
+         }
+         
+         
+         function getUserDB() {
+            var transaction = db.transaction(["user"]);
+            var objectStore = transaction.objectStore("user");
+            var request = objectStore.get(garrSavedData[0]); //"00-03"
+            var objText;
+            
+            request.onerror = function(event) {
+               alert("Unable to retrieve daa from database!");
+            };
+            
+            request.onsuccess = function(event) {
+               // Do something with the request.result!
+               if(request.result) {
+                  //alert("FirstName: " + request.result.firstname + ", LastName: " + request.result.lastname + ", Email: " + request.result.email);
+                  objText = document.getElementById('divTesting'); 
+                  objText.innerHTML = "FirstName: " + request.result.firstname + ", LastName: " + request.result.lastname + ", Email: " + request.result.email;
+               } else {
+                  alert("record couldn't be found in your database!");
+               }
+            };
+         }
+         
+         
+         function getAllUsers() {
+            var objectStore = db.transaction("user").objectStore("user");
+            
+            objectStore.openCursor().onsuccess = function(event) {
+               var cursor = event.target.result;
+               
+               if (cursor) {
+                  alert("Name for id " + cursor.key + " is " + cursor.value.firstname + ", LastName: " + cursor.value.lastname + ", Email: " + cursor.value.email);
+                  cursor.continue();
+               } else {
+                  alert("No more entries!");
+               }
+            };
+         }
+         
+         
+         function removeUserDB() {
+            var request = db.transaction(["user"], "readwrite")
+            .objectStore("user")
+            .delete("00-03");
+            
+            request.onsuccess = function(event) {
+               alert("record's entry has been removed from your database.");
+            };
+         }
+
+         
+//-----------------------------
+
+
+function sButtonBack()
+{
+    window.location = "index.html";
+}
+
+
+function sButtonDone()
+{
+    var trmTime = null;
+    //do something until you have a web service to submit to
+    setUserDB(); 
+    getUserDB(); 
+    //
+    trmTime = setTimeout(sButtonBack, 5000);
+}
+
+
+//----------------------------
+
+
+function sParseURLValues(strData)
+{
+    var arrDataSet = null;
+    var arrPair = null;
+    var strDataTrim = "";
+    var strDelimeter = "";
+    var intCount = 0;
+    var intI = 0;
+    //
+    arrDataSet = strData.split('|');
+    intCount = arrDataSet.length;
+    for(intI=0; intI < intCount; intI++)
+    {
+        arrPair = arrDataSet[intI].split(':');
+        strDataTrim = strDataTrim + strDelimeter + arrPair[1];
+        arrPair = null;
+        strDelimeter = ":";
+    }
+    //end of FOR loop
+    return strDataTrim;
+}
+
+
+//URL query format is:  
+// id | firstname | lastname | email
+// Ex: tBox0:21818-1538-148|tBox1:jack|tBox2:toenials|tBox3:toenailjj@noemail.com
+function fGetUrlQueryData()
+{
+    var arrInfo = null;
+    var arrDetails = null;
+    var strRecord ="";
+    var strSearch = "";
+    var strGetInfo = location.search;
+    arrInfo = strGetInfo.split("?");
+    strGetInfo = arrInfo[1]
+    arrInfo = null; 
+    //
+    arrInfo = strGetInfo.split("&");
+    //
+    arrDetails = arrInfo[0].split("=");
+    strRecord = arrDetails[1];
+    //alert("rec: "+ strRecord +" :org:"+ arrInfo[0]); //testing only
+    arrDetails = null;
+    return strRecord;
+}
+//-----------------------------
+
+
+
+function sStart()
+{
+    var objText;
+    var strTemp = "";
+    var strValuesToSave = "";
+    objText = document.getElementById('divTesting'); 
+    strTemp = fGetUrlQueryData(); 
+    gstrSavedData = strTemp; // save data to a global var for later use
+    objText.innerHTML = "onLoad found URL data to save in DB: "+ strTemp;
+    //
+    strValuesToSave = sParseURLValues(strTemp);
+    objText.innerHTML = "Condensed DB values: "+ strValuesToSave;
+    garrSavedData = strValuesToSave.split(':');
+    //
+    //- having timing issues with running these functions here
+    setUserDB(); 
+    getUserDB(); 
+}
+   
+   
+function sMain()
+{
+    //delay the main/start function to avoid timing issues with the onLoad action of the Body tag
+    trmTime = setTimeout(sStart, 2000);
+    trmTime = setTimeout(sButtonBack, 5000);
+}
+
+
+//-----------------------------
+
+function noenter() {
+  return !(window.event && window.event.keyCode == 13); } 
+</script>
+</head>
+
+<body onload="sMain();" >
+    <br><br>
+    
+<form id="frmMain" name="frmMain">
+<div id="divFormBlock" class="divFormBlock">
+
+
+<div style="font-size:16px; font-family:Arial; color:green; font-weight:900; text-align:center;  "> User Info Submitted and Saved (3rd page) </div> 
+<br><br>
+
+
+
+<br>
+<!--button type="button" id="btnFormButton" name="btnFormButton"  class="btnGeneric" onclick="sButtonDone();"--><!--Test--><!--/button-->
+<br><br><br>
+<div id="divTesting" style="color:red;"> </div> 
+
+
+</div><!-- divFormBlock -->
+</form>
+
+<br><br>
+<script>
+//---------------------------------
+//running the function here to replace the onLoad action in the Body tag is sometimes better and resolves a lot of timing or loading issues!
+//sMain();
+
+</script>
+</body>
+</html>
